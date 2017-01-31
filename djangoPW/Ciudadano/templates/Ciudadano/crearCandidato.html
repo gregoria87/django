@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+	<p><b>Añade un nuevo candidato:</b></p>
+{% block content %}
+	<form id='form' method='post' enctype='multipart/form-data' action=''>{% csrf_token %}
+	    {{form.as_p}}
+		<p><input type='submit' value='Submit'></p>
+	</form>
+{% endblock %}

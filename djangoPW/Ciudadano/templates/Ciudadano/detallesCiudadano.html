@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+	<style>
+	*
+		.contenedor
+		{
+			width: 100%;
+			margin: 0 auto;
+			-background-color: #000;
+		}
+		.Title
+		{
+			text-align: center;
+		}
+		.Texto
+		{
+			width: 50%;
+			margin: 0 auto;
+			-background-color: #000;
+			float: left;
+			text-align:center;
+		}
+		.foto
+		{
+			width: 50%;
+			margin: 0 auto;
+			-background-color: #000;
+			float: left;
+		}
+		.botones
+		{
+			float: left;
+			width: 50%;
+			margin-top:60px;
+		}
+	</style>
+	
+	<div class="Title">
+		<p>Ficha del ciudadano {{ ciudadano.first_name }}</p>
+	</div>
+
+{% endblock %}
+
+{% block content %}
+		
+		<div class="contenedor">
+		
+			<div class="Texto">
+				<p><b>Nombre:</b> {{ ciudadano.first_name }}</p>
+				<p><b>Apellidos:</b> {{ ciudadano.last_name }}</p>
+				<p><b>DNI:</b> {{ ciudadano.DNI }}</p>
+				<p><b>Ciudad:</b> {{ ciudadano.ciudad }}</p>
+				<p><b>Código postal:</b> {{ ciudadano.codigoPostal }}</p>
+				<p><b>Mesa:</b> {{ ciudadano.mesa }}</p>
+				<p><b>Circunscripción: </b><a href="{% url 'Circunscripcion:verCircunscripcionDetalle' ciudadano.circunscripcion.id %}">{{ ciudadano.circunscripcion.nombre }}</a></p>
+		
+			</div>
+			
+		</div>
+		
+		<div class="botones">
+			{% if request.user.is_staff %}
+				<a href="{% url 'Ciudadano:editarCiudadano' ciudadano.id %}">
+				<input type="Submit" value="Editar ciudadano"/>
+				</a></p>
+			
+				<a href="{% url 'Ciudadano:borrarCiudadano' ciudadano.id %}">
+				<input type="Submit" value="Borrar ciudadano"/>
+				</a></p>
+			{% elif request.user.username == ciudadano.username %}
+				<a href="{% url 'Ciudadano:editarCiudadano' ciudadano.id %}">
+				<input type="Submit" value="Editar ciudadano"/>
+				</a></p>
+			
+			{% endif %}
+		
+		
+		
+			{% if request.user.is_staff or request.user.username == ciudadano.username %}
+				<a href="{% url 'Ciudadano:modificarContrasenia' %}">
+				<input type="Submit" value="Cambiar contraseña"/>
+				</a></p>
+			{% endif %}
+		</div>
+
+{% endblock %}

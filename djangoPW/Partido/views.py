@@ -1,0 +1,168 @@
+from django.http import HttpResponse
+from django.utils import timezone 
+from Partido.models import Partido
+from Ciudadano.models import Ciudadano, Candidato
+from Circunscripcion.models import Circunscripcion, Voto_partido_circu
+from Partido.forms import crearPartidoForm, AgregarCircunscripcion
+from Circunscripcion.forms import crearCircunscripcionYPartidoForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.urlresolvers import reverse, reverse_lazy
+from Partido.forms import ModificarPartidoForm
+from django.views.generic.edit import CreateView
+from django.views.generic import ListView
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+
+# Create your views here.
+
+#Funcion para mostrar los partidos
+class mostrarPartidos(ListView):
+	template_name = 'Partido/mostrar.html'
+	context_object_name = 'partidos'
+	def get_queryset(self):
+		return Partido.objects.all()
+	
+#Funcion para crear un partido, creando tambien la relacion partido-circunscripcion
+@staff_member_required
+def crearPartido(request):
+	mensaje = None
+	circunscripcion = Circunscripcion.objects.all() #Si existen circunscripciones seleccionamos una de las existentes y sino la creamos
+	if circunscripcion.count():
+		if request.method == 'POST':
+			form = crearPartidoForm(request.POST)
+			if form.is_valid(): #Obtenemos los atributos de partido del formulario
+				nombre = request.POST['nombre']
+				anio = request.POST['anioCreacion']
+				breveHistoria = request.POST['breveHistoria']
+				programa = request.POST['programaElectoral']
+				imagen = request.POST['imagen']
+				if Partido.objects.filter(nombre=nombre).count(): #Si ya existe un partido con ese nombre
+					mensaje = "Ya existe un partido con ese nombre, elija otro por favor"
+					context = {'form':form,'mensaje':mensaje}
+					return render(request,'Partido/crearPartido.html',context)
+				else:
+					partido = Partido(nombre=nombre,anioCreacion=anio,breveHistoria=breveHistoria,programaElectoral=programa,imagen=imagen)
+					partido.save() #Guardamos el partido
+					opcion = request.POST['circunscripcion']
+					circunscripcion = get_object_or_404(Circunscripcion, id=opcion) #Obtenemos la circunscripcion
+					relacion = Voto_partido_circu(circunscripcion=circunscripcion,partido=partido) #Creamos la relacion entre ellos
+					relacion.save()
+					return redirect('Partido:mostrarPartidos')
+			else:
+				mensaje = "No ha rellenado correctamente el formulario"
+			context = {'form':form,'mensaje':mensaje}
+			return render(request,'Partido/crearPartido.html',context)
+		else:
+			form = crearPartidoForm()
+		context = {'form':form}
+		return render(request,'Partido/crearPartido.html',context)
+	else:
+		if request.method == 'POST':
+			form = crearCircunscripcionYPartidoForm(request.POST)
+			if form.is_valid():
+				nombreCircunscripcion = request.POST['nombreCircunscripcion']
+				nombre = request.POST['nombre']
+				anio = request.POST['anioCreacion']
+				breveHistoria = request.POST['breveHistoria']
+				programa = request.POST['programaElectoral']
+				imagen = request.POST['imagen']
+				partido = Partido(nombre=nombre,anioCreacion=anio,breveHistoria=breveHistoria,programaElectoral=programa,imagen=imagen)
+				partido.save() #Guardamos el partido
+				c=Circunscripcion(nombre=nombreCircunscripcion) #Guardamos la Circunscripcion
+				c.save()
+				relacion = Voto_partido_circu(circunscripcion=c,partido=partido) #Creamos la relacion entre ellos
+				relacion.save()
+				return redirect('Partido:mostrarPartidos')
+			else:
+				mensaje = "No ha rellenado correctamente el formulario"
+			context = {'form':form,'mensaje':mensaje}
+			return render(request,'Partido/crearPartido.html',context)
+		else:
+			form = crearCircunscripcionYPartidoForm()
+		context = {'form':form}
+		return render(request,'Partido/crearPartido.html',context)
+
+#Funcion para ver los atributos de un partido
+def detallesPartido(request,partido_id):
+	partido = Partido.objects.get(id = partido_id)
+	candidatos = Candidato.objects.filter(partido = partido_id)
+	relacion_circunscripciones = partido.voto_partido_circu_set.all()
+	context = {'partido':partido,'candidatos':candidatos,'relacion_circunscripciones':relacion_circunscripciones}
+	return render(request,'Partido/detallesPartido.html',context)
+
+#Funcion para modificar un partido politico
+@login_required(login_url='Ciudadano:entrar')
+def modificarPartido(request,partido_id): #Solo puede modificarlo un administrador o un candidato del partido
+	if request.user.is_staff or Candidato.objects.filter(partido = partido_id,username=request.user.username).count():
+		partido = get_object_or_404(Partido, id = partido_id)
+		if request.method == 'POST':
+			form = ModificarPartidoForm(request.POST, instance=partido)
+			if form.is_valid():
+				form.save()
+				return redirect('Partido:detallesPartido', partido_id)
+		else:
+			form = ModificarPartidoForm(instance=partido)
+		context = {'form':form}
+		return render(request,'Partido/formularioModificarPartido.html',context)
+	else:
+		mensaje = "No puedes editar el partido si no perteneces a el como candidato"
+		partido = get_object_or_404(Partido, id = partido_id)
+		candidatos = Candidato.objects.filter(partido = partido_id)
+		relacion_circunscripciones = partido.voto_partido_circu_set.all()
+		context = {'mensaje':mensaje,'partido':partido,'candidatos':candidatos,'relacion_circunscripciones':relacion_circunscripciones}
+		return render(request,'Partido/detallesPartido.html',context)
+		
+	
+#Funcion para agregar a el partido una circunscripcion
+@login_required(login_url='Ciudadano:entrar')
+def agregarPartidoCircunscripcion(request,partido_id):
+	mensaje = None
+	if request.user.is_staff or Candidato.objects.filter(partido = partido_id,username=request.user.username).count():
+		if request.method == 'POST':
+			form = AgregarCircunscripcion(request.POST)
+			if form.is_valid:
+				opcion = request.POST['selecciona_la_circunscripcion']
+				partido = get_object_or_404(Partido,id=partido_id)
+				relacion = Voto_partido_circu.objects.filter(partido=partido,circunscripcion=opcion)
+				if not relacion.count():
+					circunscripcion = get_object_or_404(Circunscripcion,id=opcion)
+					nueva_relacion = Voto_partido_circu(partido=partido,circunscripcion=circunscripcion)
+					nueva_relacion.save()
+					candidatos = Candidato.objects.filter(partido = partido_id) #Agregamos los atributos que necesita la plantilla
+					relacion_circunscripciones = partido.voto_partido_circu_set.all()
+					mensaje="Se ha agregado correctamente la circunscripcion"
+					context = {'mensaje':mensaje,'partido':partido,'candidatos':candidatos,'relacion_circunscripciones':relacion_circunscripciones}
+					return render(request,'Partido/detallesPartido.html',context)
+				else:
+					mensaje = "El partido ya se encuentra inscrito en esa circunscripcion"
+			else:
+				mensaje = "Formulario invalido"
+		else:
+			form = AgregarCircunscripcion
+		context = {'form':form,'mensaje':mensaje}
+		return render(request,'Partido/formulario.html',context)
+	else:
+		partido = get_object_or_404(Partido, id = partido_id)
+		candidatos = Candidato.objects.filter(partido = partido_id) #Agregamos los atributos que necesita la plantilla
+		mensaje = "No puedes editar las circunscripciones del partido si no perteneces a el como candidato"
+		relacion_circunscripciones = partido.voto_partido_circu_set.all()
+		context = {'mensaje':mensaje,'partido':partido,'candidatos':candidatos,'relacion_circunscripciones':relacion_circunscripciones}
+		return render(request,'Partido/detallesPartido.html',context)
+	
+	
+#Funcion para borrar un partido, borrara los candidatos que pertenezcan al partido quedando estos como ciudadanos
+@staff_member_required
+def borrarPartido(request,partido_id):
+	partido = get_object_or_404(Partido, id = partido_id)
+	if request.method == 'POST':
+		candidatos = Candidato.objects.filter(partido = partido_id)
+		for c in candidatos:
+			ciudadano = Ciudadano(first_name=c.first_name,last_name=c.last_name,username=c.username,password=c.password,DNI=c.DNI,mesa=c.mesa,codigoPostal=c.codigoPostal,ciudad=c.ciudad)
+			c.delete()
+			ciudadano.save()
+		partido.delete()		
+		return redirect('Partido:mostrarPartidos')
+	else:
+		context = {'partido':partido}
+		return render(request,'Partido/confirmarBorrar.html',context)
+

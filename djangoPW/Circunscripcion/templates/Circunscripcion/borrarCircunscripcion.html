@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<form action="" method="post">{% csrf_token %}
+    	<p>¿Estas seguro de que quieres borrar a {{ circunscripcion.nombre }} {{ ciudadano.last_name }}?</p>
+    <input type="submit" value="Aceptar" />
+{% endblock %}
+</form>

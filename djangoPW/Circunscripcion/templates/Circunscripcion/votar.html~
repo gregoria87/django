@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{% if request.POST %}
+		<p><b>Selecciona el partido que quieres votar:</b></p>
+	{% endif %}
+	<form id='form' method='post' enctype='multipart/form-data' action=''>{% csrf_token %}
+	    {{form.as_p}}
+		<p><input type='submit' value='Submit'></p>
+	</form>
+	
+{% endblock %}

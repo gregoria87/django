@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="es" >
+	<head>	
+		<meta charset="UTF-8">
+		{% block title %}{% endblock %}
+		<style>
+		*
+			.barraNavegar
+				{
+					width: 100%;
+					text-align: center;
+					margin-left: auto;
+					margin-right: auto;
+					color: black;
+					background-color: #F5A9BC;
+				}
+			.piePagina
+				{
+					height: 100px;
+					width: 100%;
+					text-align: center;
+					color: black;
+					background-color: #F5A9BC;
+					position:fixed;
+					bottom:0;
+				}
+				
+			a
+			{ 
+				text-decoration:none;
+			 	color:blue;
+			}
+			
+			a:hover
+			{
+				color:  #6495ED;
+			}
+			
+			html,body
+			{
+				height: 100%;
+			}
+		
+		</style>
+	
+	</head>
+	
+	<body>
+	
+		<div class="barraNavegar">
+			<div id="menu">
+				<p><a href="{% url 'index' %}" text-decoration:none>Inicio</a> | <a href="{% url 'Partido:mostrarPartidos' %}" >Partidos políticos</a> | <a href="{% url 'Circunscripcion:verResultados' %}" >Resultados</a> | <a href="{% url 'Circunscripcion:mostrarCircunscripciones' %}" >Circunscripciones</a>
+				
+				{% if user.is_authenticated %}
+					{% if request.user.is_staff %}
+						| <a href="{% url 'Ciudadano:verCiudadanos' %}" >Ciudadanos</a> | <b>Bienvenido, {{user.username}}</b> - <a href="{% url 'Ciudadano:salir' %}" >Cerrar sesión</a>
+					{% else %}
+						| <a href="{% url 'Ciudadano:detallesCiudadano' user.id %}" >Bienvenido, {{user.username}}</a> - <a href="{% url 'Ciudadano:salir' %}" >Cerrar sesión</a>
+					{% endif %}	
+				{% else %}
+					| <a href="{% url 'Ciudadano:entrar' %}" >Iniciar sesión</a>
+				{% endif %}
+				</p>
+			</div>
+		</div>
+		
+		{% if mensaje %}
+			<p><b>{{ mensaje }}</b></p>
+		{% endif %}
+		
+		
+		<div id="content">
+			{% block content %}
+			
+			{% endblock %}
+		</div>
+		
+		<footer>
+			<div class="piePagina">
+				
+				<p>Creado por María Elena Pedrajas Perabá el 31 de enero de 2017.</p>
+			</div>
+		</footer>
+		  
+	</body>
+</html>

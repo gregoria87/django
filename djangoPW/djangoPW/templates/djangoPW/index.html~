@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>Bienvenido al proceso electoral online.Seleccione cualquiera de los índices superiores para ver los Partidos y sus respectivos candidatos o los resultados actuales de las votaciones.</p>
+
+	{% if request.user.is_authenticated %}
+		{%  if not request.user.is_staff %}
+			<p>Seleccione "Votar" para llevar a cabo su votación.</p>
+			<p>Si desea ver o modificar su información, pulse sobre su nombre en la parte superior del menú.</p>
+			
+			<p><a href="{% url 'Circunscripcion:votar' %}">
+				<input type='submit' value='Votar'/>
+			</a></p>
+		{% else %}
+			<p>.</p>
+		{% endif %}
+		
+	{% else %}
+		<b>Inicie sesión para votar.</b>	
+	{% endif %}
+	
+{% endblock %}
+
+

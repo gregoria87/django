@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<p><b>Modifica el partido:</b></p>
+<form id='form' method='post' enctype='multipart/form-data' action=''>{% csrf_token %}
+	{{form.as_p}}
+<p><input type='submit' value='Enviar'></p>
+</form>
+{% endblock %}

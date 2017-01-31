@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+	th, td 
+	{
+		padding: 15px;
+		border-bottom: 1px solid #ddd;
+	}
+	table td
+	{
+		text-align:center;
+	}
+	tr:hover {background-color: #d5d5d5 !important}
+	tr:nth-child(even) {background-color: #f2f2f2}
+</style>
+
+	{% if vector %}
+		<p><b>Los resultados son:</b></p>
+	
+		<table border="0" cellspacing="1">
+			<th>Partido</th>
+			<th>Escaños</th>
+		
+			{% for tupla in vector %}
+				<tr>
+					<td>{{ tupla.0 }}</td>
+					<td>{{ tupla.1 }}</td>
+				</tr>
+			{% endfor %}
+	
+		</table>
+	{% else %}
+		<p><b>No hay partidos en la base de datos</b></p>
+	{% endif %}
+	
+{% endblock %}

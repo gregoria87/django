@@ -1,0 +1,40 @@
+from django.http import HttpResponse
+from django.utils import timezone 
+from Partido.models import Partido
+from Ciudadano.models import Ciudadano, Candidato
+from Circunscripcion.models import Circunscripcion, Voto_partido_circu
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.urlresolvers import reverse, reverse_lazy
+
+
+#Funcion para ver la pagina principal
+def index(request):
+	return render(request,'djangoPW/index.html')
+
+#Funcion para iniciar sesion
+def entrar(request):
+	message = None
+	if request.method == 'POST':
+		form = LoginForm(request.POST)
+		if form.is_valid():
+			username = request.POST['username']
+			password = request.POST['password']
+			user = authenticate(username=username,password=password)
+			if user is not None:
+				if user.is_active:
+					login(request, user)
+					return redirect('elecciones:index')
+				else:
+					message = "Tu usario esta inactivo"
+			else:
+				message = "Nombre de usuario y/o password incorrecto"
+	else:
+		form = LoginForm()
+	context = {'message': message,'form': form}
+	return render(request,'elecciones/formularioLogin.html',context)
+	
+#Funcion para cerrar sesion
+@login_required
+def cerrarSesion(request):
+	logout(request)
+	return redirect('djangoPW/index.html')

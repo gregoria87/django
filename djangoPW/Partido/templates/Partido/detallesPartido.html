@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+	<style>
+	*
+		.contenedor
+		{
+			width: 100%;
+			margin: 0 auto;
+			-background-color: #000;
+		}
+		.Title
+		{
+			text-align: center;
+		}
+		.Texto
+		{
+			width: 50%;
+			margin: 0 auto;
+			-background-color: #000;
+			float: left;
+		}
+		.foto
+		{
+			width: 50%;
+			margin: 0 auto;
+			-background-color: #000;
+			float: left;
+		}
+		.foto img
+		{
+			height:300px;
+			width:auto;
+		}
+		.botones
+		{
+			margin-left:100px;
+		}
+		.clearfix
+		{
+			clear:both;
+		}
+	</style>
+	
+	<div class="Title">
+		<p>Bienvenido al partido {{ partido.nombre }}</p>
+	</div>
+
+{% endblock %}
+
+{% block content %}
+	{% if partido %}
+		{% load staticfiles %}
+		
+		<div class="contenedor">
+		
+			<div class="Texto">
+				<p><b>Nombre partido:</b> {{ partido.nombre }}</p>
+				<p><b>Año de creación:</b> {{ partido.anioCreacion }}</p>
+				<p><b>Breve historia:</b> {{ partido.breveHistoria }}</p>
+				<p><b>Programa electoral:</b> {{ partido.programaElectoral }}</p>
+				
+				<h3>Candidatos:</h3>
+				{% if candidatos %}
+					<ul>
+					{% for candidato in candidatos %}
+						 <li> <a href="{% url 'Ciudadano:detallesCandidato' candidato.id %}">{{ candidato.first_name }}</a></li> 
+					{% endfor %}
+					</ul>
+				{% else %}
+					<p>No hay candidatos</p>
+				{% endif %}
+				
+				{% if user.is_authenticated %}		
+					<p><a href="{% url 'Ciudadano:addCiudadanoComoCandidato' partido.id %}">
+						<input type='submit' value='Añadir un ciudadano como candidato'/>
+					</a></p>
+				{% endif %}
+				
+				<h3>Circunscripciones a las que esta adscrito:</h3>
+				{% if relacion_circunscripciones %}
+					<ul>
+					{% for relacion_circunscripciones in relacion_circunscripciones %}
+						<li> <a href="{% url 'Circunscripcion:verCircunscripcionDetalle' relacion_circunscripciones.circunscripcion.id %}">{{ relacion_circunscripciones.circunscripcion }}</a></li>
+					{% endfor %}
+					</ul>
+				{% else %}
+					<p>No hay circunscripciones</p>
+				{% endif %}
+				
+				{% if request.user.is_authenticated %}
+					<p><a href="{% url 'Partido:agregarPartidoCircunscripcion' partido.id %}">
+						<input type='submit' value='Añadir circunscripción'/>
+					</a></p>
+				{% endif %}
+				
+		
+			</div>
+	
+			<div class="foto">
+				<img class="fotoPartido" src="{% static "/Partido/static/" %}{{partido.imagen}}" alt="{{ partido.nombre }}"> 
+				
+				<div class="botones">
+			
+					{% if user.is_authenticated %}
+			
+						<a href="{% url 'Partido:modificarPartido' partido.id %}">
+							<input type='submit' value='Editar partido'/>
+						</a>
+			
+						{% if request.user.is_staff %}
+							<a href="{% url 'Partido:borrarPartido' partido.id %}">
+								<input type='submit' value='Borrar partido'/>
+							</a>
+						{% endif %}
+				
+					{% endif %}
+		
+				</div>
+			
+			</div>
+			
+			<div class="clearfix"></div>
+			
+			
+			
+		</div>
+		
+		
+
+
+	{% else %}
+		<p>No hay partidos en la Base de Datos.</p>
+	{% endif %}
+
+{% endblock %}

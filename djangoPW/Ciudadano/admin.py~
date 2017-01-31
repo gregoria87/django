@@ -1,0 +1,7 @@
+from django.contrib import admin
+from .models import Ciudadano,Candidato
+
+# Register your models here.
+
+admin.site.register(Circunscripcion)
+admin.site.register(Voto_partido_circu)

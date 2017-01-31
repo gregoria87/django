@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{% if circunscripciones %}
+		<p>Las circunscripciones electorales son:</p>
+			<ul>
+				{% for circunscripcion in circunscripciones %}
+					<li>
+						<a href="{% url 'Circunscripcion:verCircunscripcionDetalle' circunscripcion.id %}">{{ circunscripcion.nombre }}</a>
+					</li>
+				{% endfor %}
+			</ul>
+	{% else %}
+		<p><b>No hay circunscripciones electorales</b></p>
+	{% endif %}
+	
+	{% if request.user.is_staff %}
+		<p><a href="{% url 'Circunscripcion:crearCircunscripcion' %}">
+			<input type="Submit" value="Añadir circunscripción"/>
+		</a></p>
+	{% endif %}
+{% endblock %}

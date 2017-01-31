@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<html>
+		<head>
+			<meta charset="UTF-8">
+			<title>Index</title>
+		
+			<style>
+				*
+				{
+					outline:none;
+				}
+				.contenedor
+				{
+					width:900px;
+					margin: 0 auto;
+					-background-color: #000;
+				}
+				.partido
+				{
+					width: 270px;
+					height: 270px;
+					margin: 15px;
+					-background-color: pink;
+					float: left;
+				}
+				.foto
+				{
+					width: 250px;
+					height: 220px;
+					margin-top: 10px;
+					margin-bottom:10px;
+					margin-left: auto;
+					margin-right: auto;
+					-background-color: red;
+				}
+				.nombrePartido
+				{
+					width: 250px;
+					text-align: center;
+					margin-left: auto;
+					margin-right: auto;
+					color: black;
+					-background-color: blue;
+				}
+				.fotoPartido
+				{
+					width: 250px;
+					height: auto;
+					-background-color: yellow;
+				}
+				.clearfix
+				{
+					clear:both;
+				}
+				.partido a
+				{
+					text-decoration: none;
+				}
+				.addPartido
+				{
+					position: fixed;
+					bottom: 50px;
+					left: 30px;
+					width: 300px;
+				}
+			</style>
+		</head>
+
+		<body>
+			{% if partidos %}
+		
+				{% load staticfiles %}
+		
+				<div class="contenedor">
+					{% for partido in partidos %}
+						<div class="partido">
+							<a href="{% url 'Partido:detallesPartido' partido.id %}">
+								<div class="foto">
+									<img class="fotoPartido" src="{% static "/Partido/static/" %}{{partido.imagen}}" alt="{{ partido.nombre }}"> 
+								</div>
+								<div class="nombrePartido">
+									{{ partido.nombre }}
+								</div>
+							</a>
+						</div>
+					{% endfor %}
+					<div class="clearfix"></div>
+				</div>
+		
+			{% else %}
+				<p>No hay partidos en la Base de Datos.</p>
+			{% endif %}
+	
+			<div class="addPartido">
+				{% if request.user.is_staff %}
+					<a href="{% url 'Partido:crearPartido' %}">
+						<input type="Submit" value="Añadir partido"/>
+					</a>
+				{% endif %}
+			</div>
+			
+		</body>
+
+	</html> 
+{% endblock %}
+

@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+	<p>¿Esta seguro de que quiere abandonar su sesión?</p>
+	<input type ="Submit" value="Aceptar"/>
+{% endblock %}
+	

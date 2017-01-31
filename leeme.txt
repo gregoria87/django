@@ -1,0 +1,24 @@
+Proyecto de elecciones electorales creado por María Elena Pedrajas Perabá.
+
+Para iniciar sesión con la cuenta de administrador:
+
+	user: admin
+	password: admin1234
+
+Y para iniciar sesión con la cuenta de gestor:
+
+	user: gestor
+	password: admin1234
+
+Ambos puede crear, modificar y borrar partidos, ciudadanos, candidatos y circunscripciones, aunque solo el administrador puede crear grupos y users desde la interfaz de administración.
+
+Para inciar sesión con un ciudadano/candidato:
+
+	user: nombre del usuario en minúscula
+	password: pass1234
+
+Un ciudadano puede votar y ver la información de los partidos, los candidatos que pertenecen a estos y las circunscripciones, pero no pueden ver al resto de ciudadanos. Solo se permite que un usuario modifique un partido o añada un candidato o circunscripcion a un partido si pertenece a dicho partido.
+
+El usuario en cuestión solo podrá votar una vez a un partido que se presente a la circunscripcion a la cual esta adscrito, y podrá modificar tanto su información como su contraseña pulsando sobre su nombre de usuario en la barra de navegación superior.
+
+

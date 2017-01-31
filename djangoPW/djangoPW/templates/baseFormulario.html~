@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es" >
+<head>	
+
+	<div id="menu">
+		
+	</div>
+	{% block title %}Rellena este formulario:{% endblock %}
+	
+</head>
+<body>
+	<div id="content">
+		{% block content %}
+		
+			<form id='form' method='post' enctype='multipart/form-data' action=''>{% csrf_token %}
+	    		{{form.as_p}}
+			<p><input type='submit' value='Enviar'></p>
+			</form>
+		
+		{% endblock %}
+	</div>
+      
+</body>
+</html>

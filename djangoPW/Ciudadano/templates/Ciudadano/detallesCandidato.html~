@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}
+
+	<style>
+	*
+		.contenedor
+		{
+			width: 100%;
+			margin: 0 auto;
+			-background-color: #000;
+		}
+		.Title
+		{
+			text-align: center;
+		}
+		.Texto
+		{
+			width: 50%;
+			margin: 0 auto;
+			text-align:center;
+			-background-color: #000;
+			float: left;
+		}
+		.foto
+		{
+			width: 50%;
+			margin: 0 auto;
+			-background-color: #000;
+			float: left;
+		}
+		.foto img
+		{
+			height:300px;
+			width:auto;
+		}
+	</style>
+	
+	<div class="Title">
+		<p>Ficha del candidat@ {{ candidato.first_name }}</p>
+	</div>
+
+{% endblock %}
+
+{% block content %}
+	
+		{% load staticfiles %}
+		
+		<div class="contenedor">
+		
+			<div class="Texto">
+				<p><b>Nombre:</b> {{ candidato.first_name }}</p>
+				<p><b>Apellidos:</b> {{ candidato.last_name }}</p>
+				<p><b>DNI:</b> {{ candidato.DNI }}</p>
+				<p><b>Ciudad:</b> {{ candidato.ciudad }}</p>
+				<p><b>Código postal:</b> {{ candidato.codigoPostal }}</p>
+				<p><b>Mesa:</b> {{ candidato.mesa }}</p>
+				<p><b>Circunscripción: </b><a href="{% url 'Circunscripcion:verCircunscripcionDetalle' candidato.circunscripcion.id %}">{{ candidato.circunscripcion.nombre }}</a></p>
+		
+			</div>
+	
+			<div class="foto">
+				<img class="fotoCandidato" src="{% static "/Ciudadano/static/images/politicos/" %}{{ candidato.imagen }}" alt="{{ candidato.first_name }}"> 
+			</div>
+			
+		</div>
+		
+		{% if request.user.is_staff %}
+			<a href="{% url 'Ciudadano:editarCiudadano' candidato.id %}">
+				<input type='Submit' value='Editar candidato'/>
+			</a>
+		{% elif request.user.username == candidato.username %}
+			<a href="{% url 'Ciudadano:editarCiudadano' candidato.id %}">
+				<input type='Submit' value='Editar candidato'/>
+			</a>
+		{% endif %}
+
+		{% if request.user.is_staff %}
+			<a href="{% url 'Ciudadano:borrarCandidato' candidato.id %}">
+				<input type='Submit' value='Borrar candidato'/>
+			</a>
+		{% endif %}
+{% endblock %}

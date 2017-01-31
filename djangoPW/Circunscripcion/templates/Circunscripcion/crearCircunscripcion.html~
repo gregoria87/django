@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+	{% if not request.method.POST %}
+		<p><b>Crea una nueva circunscripción:</b></p>
+	{% endif %}
+	
+	<form id='form' method='post' enctype='multipart/form-data' action=''>{% csrf_token %}
+	    {{form.as_p}}
+		<p><input type='submit' value='Submit'></p>
+	</form>
+{% endblock %}
